@@ -85,6 +85,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       const roundPoints = result.isCorrect ? calculateRoundScore(state.sequenceLength) : 0
       const score = state.score + roundPoints
       const mistakes = state.mistakes + (result.isCorrect ? 0 : 1)
+      const runCompleted = !result.isCorrect && mistakes >= 2
       const bestRecallTimeMs =
         result.isCorrect && recallTime !== null
           ? state.profile.bestRecallTimeMs === null
@@ -106,6 +107,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           bestScore: Math.max(state.profile.bestScore, score),
           highestSequenceLength: Math.max(state.profile.highestSequenceLength, state.sequenceLength),
           totalRoundsCompleted: state.profile.totalRoundsCompleted + (result.isCorrect ? 1 : 0),
+          completedRuns: state.profile.completedRuns + (runCompleted ? 1 : 0),
           bestRecallTimeMs,
         },
       }
@@ -113,11 +115,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     case 'CONTINUE': {
       if (state.phase !== 'feedback') return state
       if (!state.lastAnswerCorrect && state.mistakes >= 2) {
-        return {
-          ...state,
-          phase: 'game-over',
-          profile: { ...state.profile, completedRuns: state.profile.completedRuns + 1 },
-        }
+        return { ...state, phase: 'game-over' }
       }
       const nextLength = state.lastAnswerCorrect ? state.sequenceLength + 1 : state.sequenceLength
       const round = prepareRound(state.category, nextLength)
