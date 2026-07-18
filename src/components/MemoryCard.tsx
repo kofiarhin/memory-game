@@ -33,10 +33,19 @@ export function MemoryCard({
           ? 'ring-4 ring-sky-400 opacity-55'
           : 'ring-1 ring-white/15'
   const background = definition.colour ? { backgroundColor: definition.colour } : undefined
+  const accessibleLabel = status ? `${definition.label}, ${status}` : definition.label
   const content = (
     <>
       <span aria-hidden="true" className="drop-shadow-sm">{definition.glyph}</span>
       <span className="mt-1 text-[0.62rem] font-bold uppercase tracking-[0.16em] text-white/95 sm:text-xs">{definition.label}</span>
+      {status && (
+        <span
+          aria-hidden="true"
+          className={`absolute right-1.5 top-1.5 grid h-6 w-6 place-items-center rounded-full text-sm font-black text-slate-950 ${status === 'correct' ? 'bg-emerald-300' : 'bg-rose-300'}`}
+        >
+          {status === 'correct' ? '✓' : '×'}
+        </span>
+      )}
     </>
   )
   const classes = `${sizing} ${statusClass} relative flex shrink-0 flex-col items-center justify-center overflow-hidden rounded-3xl border border-white/20 bg-slate-700 p-2 text-white shadow-xl shadow-slate-950/20 transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-sky-300 disabled:cursor-not-allowed`
@@ -47,7 +56,7 @@ export function MemoryCard({
         type="button"
         className={`${classes} enabled:hover:-translate-y-1 enabled:hover:shadow-2xl`}
         style={background}
-        aria-label={definition.label}
+        aria-label={accessibleLabel}
         aria-pressed={selected}
         disabled={disabled}
         onClick={onClick}
@@ -59,7 +68,7 @@ export function MemoryCard({
   }
 
   return (
-    <div className={classes} style={background} aria-label={definition.label} role="img">
+    <div className={classes} style={background} aria-label={accessibleLabel} role="img">
       <span aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.28),transparent_45%)]" />
       {content}
     </div>
