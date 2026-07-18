@@ -29,22 +29,29 @@ describe('gameReducer', () => {
     expect(next.phase).toBe('playback')
     expect(next.sequenceLength).toBe(4)
   })
+
   it('uses the retry on the first incorrect answer without increasing length', () => {
     const wrong = [cards[1], cards[0], cards[2]]
     const feedback = gameReducer(recallState(wrong), { type: 'SUBMIT', now: 500 })
     expect(feedback.mistakes).toBe(1)
+    expect(feedback.profile.completedRuns).toBe(0)
     const retry = gameReducer(feedback, { type: 'CONTINUE' })
     expect(retry.phase).toBe('playback')
     expect(retry.sequenceLength).toBe(3)
   })
-  it('ends the run after a second incorrect answer', () => {
+
+  it('records a completed run immediately after the second incorrect answer', () => {
     const wrong = [cards[1], cards[0], cards[2]]
     const feedback = gameReducer(recallState(wrong, 1), { type: 'SUBMIT', now: 500 })
-    const gameOver = gameReducer(feedback, { type: 'CONTINUE' })
+
     expect(feedback.mistakes).toBe(2)
+    expect(feedback.profile.completedRuns).toBe(1)
+
+    const gameOver = gameReducer(feedback, { type: 'CONTINUE' })
     expect(gameOver.phase).toBe('game-over')
     expect(gameOver.profile.completedRuns).toBe(1)
   })
+
   it('ignores selections outside the recall phase', () => {
     const state = createInitialState(DEFAULT_PROFILE)
     expect(gameReducer(state, { type: 'SELECT_CARD', card: cards[0] })).toBe(state)
