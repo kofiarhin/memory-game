@@ -44,4 +44,7 @@ npm run build
 4. A correct round adds one card and awards `sequence length² × 10` points.
 5. The first mistake uses the retry. The second mistake ends the run.
 
-See [PRD.md](./PRD.md) for the complete product requirements.
+## Documentation
+
+- [Product Requirements Document](./PRD.md)
+- [Technical Specification](./TECHNICAL_SPECIFICATION.md)
